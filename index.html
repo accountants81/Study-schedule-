@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>خطة دراسية متكاملة</title>
+    <style>
+        :root {
+            --primary: #5e35b1;
+            --secondary: #3949ab;
+            --accent: #ffab00;
+            --text: #263238;
+            --border: #e0e0e0;
+            --hover-bg: #f5f5f5;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background: #fafafa;
+            padding: 20px;
+            color: var(--text);
+            line-height: 1.5;
+        }
+        
+        .container {
+            max-width: 100%;
+            margin: 0 auto;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border-radius: 10px;
+            overflow: hidden;
+            background: white;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+        
+        .controls {
+            padding: 15px;
+            background: #f5f5f5;
+            text-align: center;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 8px 20px;
+            border: none;
+            border-radius: 5px;
+            background: var(--primary);
+            color: white;
+            font-family: 'Tajawal';
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+        
+        .btn-print {
+            background: #2ecc71;
+        }
+        
+        .btn-clear {
+            background: #e74c3c;
+        }
+        
+        .btn-add-col {
+            background: #9b59b6;
+        }
+        
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+            padding: 5px;
+        }
+        
+        .study-plan {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: auto;
+        }
+        
+        .study-plan th {
+            background: #f8f9fa;
+            color: var(--text);
+            padding: 15px 10px;
+            text-align: center;
+            font-weight: 700;
+            border: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            min-width: 150px;
+        }
+        
+        .study-plan td {
+            border: 1px solid var(--border);
+            padding: 0;
+            vertical-align: middle;
+            background: white;
+            min-width: 150px;
+        }
+        
+        .day-cell {
+            background: rgba(94, 53, 177, 0.05);
+            color: var(--primary);
+            font-weight: bold;
+            text-align: center;
+            padding: 15px;
+            width: 80px;
+        }
+        
+        .editable-cell {
+            width: 100%;
+            min-height: 80px;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            outline: none;
+            overflow: hidden;
+            word-break: break-word;
+            white-space: pre-wrap;
+            resize: both;
+            border: none;
+            font-family: 'Tajawal';
+            font-size: 14px;
+            min-width: 150px;
+            transition: all 0.3s;
+        }
+        
+        .editable-cell:focus {
+            background: rgba(255, 171, 0, 0.05);
+            box-shadow: inset 0 0 0 2px var(--accent);
+        }
+        
+        .footer-controls {
+            padding: 15px;
+            background: #f5f5f5;
+            text-align: center;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .footer-btn {
+            padding: 8px 20px;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            font-family: 'Tajawal';
+            font-weight: 500;
+            cursor: pointer;
+            min-width: 120px;
+            transition: all 0.3s;
+        }
+        
+        .footer-btn:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+        
+        .btn-add {
+            background: #27ae60;
+        }
+        
+        .btn-add-5 {
+            background: #16a085;
+        }
+        
+        .btn-remove {
+            background: #c0392b;
+        }
+        
+        .subject-header {
+            position: relative;
+            transition: all 0.3s;
+        }
+        
+        .subject-header:hover {
+            background: #e0e0e0;
+        }
+        
+        .remove-col-btn {
+            position: absolute;
+            left: 5px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 12px;
+            cursor: pointer;
+            display: none;
+            transition: all 0.3s;
+        }
+        
+        .remove-col-btn:hover {
+            background: #c0392b;
+            transform: translateY(-50%) scale(1.1);
+        }
+        
+        .subject-header:hover .remove-col-btn {
+            display: block;
+        }
+        
+        .new-subject-input {
+            padding: 8px;
+            border: 1px solid var(--border);
+            border-radius: 5px;
+            margin-left: 10px;
+            font-family: 'Tajawal';
+            transition: all 0.3s;
+        }
+        
+        .new-subject-input:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(94, 53, 177, 0.2);
+        }
+        
+        .add-col-controls {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            .container {
+                box-shadow: none;
+            }
+            .controls, .footer-controls {
+                display: none;
+            }
+            .editable-cell {
+                resize: none;
+                border: 1px solid #ddd !important;
+            }
+            .study-plan {
+                page-break-after: always;
+            }
+            .remove-col-btn {
+                display: none !important;
+            }
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>خطة دراسية متكاملة</h1>
+            <p>برنامج لتنظيم المذاكرة بكفاءة</p>
+        </div>
+        
+        <div class="controls">
+            <button class="btn btn-print" onclick="printPlan()">طباعة الخطة</button>
+            <button class="btn" onclick="saveData()">حفظ الخطة</button>
+            <button class="btn btn-clear" onclick="clearData()">مسح الكل</button>
+            <button class="btn btn-add-col" onclick="showAddColumnDialog()">إضافة مادة جديدة</button>
+            <div class="add-col-controls" id="addColControls" style="display: none;">
+                <input type="text" id="newSubjectName" class="new-subject-input" placeholder="اسم المادة الجديدة">
+                <button class="btn" onclick="addNewColumn()">تأكيد</button>
+                <button class="btn btn-clear" onclick="hideAddColumnDialog()">إلغاء</button>
+            </div>
+        </div>
+        
+        <div class="table-container">
+            <table class="study-plan">
+                <thead id="tableHeader">
+                    <tr>
+                        <th class="day-cell">اليوم</th>
+                        <th class="subject-header">عربي
+                            <button class="remove-col-btn" onclick="removeColumn('عربي')">×</button>
+                        </th>
+                        <th class="subject-header">كيمياء
+                            <button class="remove-col-btn" onclick="removeColumn('كيمياء')">×</button>
+                        </th>
+                        <th class="subject-header">فيزياء
+                            <button class="remove-col-btn" onclick="removeColumn('فيزياء')">×</button>
+                        </th>
+                        <th class="subject-header">إنجليزي
+                            <button class="remove-col-btn" onclick="removeColumn('إنجليزي')">×</button>
+                        </th>
+                        <th class="subject-header">رياضيات بحتة
+                            <button class="remove-col-btn" onclick="removeColumn('رياضيات بحتة')">×</button>
+                        </th>
+                        <th class="subject-header">رياضيات تطبيقية
+                            <button class="remove-col-btn" onclick="removeColumn('رياضيات تطبيقية')">×</button>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody id="studyPlan">
+                    <!-- سيتم ملء الجدول تلقائياً -->
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="footer-controls">
+            <button class="footer-btn btn-add" onclick="addDays(1)">إضافة يوم</button>
+            <button class="footer-btn btn-add-5" onclick="addDays(5)">إضافة 5 أيام</button>
+            <button class="footer-btn btn-remove" onclick="removeLastDay()">حذف آخر يوم</button>
+        </div>
+    </div>
+
+    <script>
+        // المواد الدراسية
+        let subjects = [
+            'عربي',
+            'كيمياء',
+            'فيزياء',
+            'إنجليزي',
+            'رياضيات بحتة',
+            'رياضيات تطبيقية'
+        ];
+        
+        // إنشاء صف جديد
+        function createDayRow(day) {
+            const row = document.createElement('tr');
+            
+            // عمود اليوم
+            const dayCell = document.createElement('td');
+            dayCell.className = 'day-cell';
+            dayCell.textContent = day;
+            row.appendChild(dayCell);
+            
+            // خلايا المواد
+            subjects.forEach(subject => {
+                const cell = document.createElement('td');
+                
+                const textarea = document.createElement('textarea');
+                textarea.className = 'editable-cell';
+                textarea.id = `day-${day}-${subject.replace(/\s+/g, '-')}`;
+                textarea.setAttribute('data-day', day);
+                textarea.setAttribute('data-subject', subject);
+                textarea.placeholder = subject;
+                
+                // تكبير الخلية تلقائياً مع المحتوى
+                textarea.addEventListener('input', function() {
+                    autoResize(this);
+                });
+                
+                // منع الانتقال بين الخلايا بالزر Tab
+                textarea.addEventListener('keydown', function(e) {
+                    if (e.key === 'Tab') {
+                        e.preventDefault();
+                    }
+                });
+                
+                cell.appendChild(textarea);
+                row.appendChild(cell);
+            });
+            
+            return row;
+        }
+        
+        // إنشاء رأس الجدول
+        function createTableHeader() {
+            const headerRow = document.createElement('tr');
+            
+            // عمود اليوم
+            const dayHeader = document.createElement('th');
+            dayHeader.className = 'day-cell';
+            dayHeader.textContent = 'اليوم';
+            headerRow.appendChild(dayHeader);
+            
+            // عناوين المواد
+            subjects.forEach(subject => {
+                const subjectHeader = document.createElement('th');
+                subjectHeader.className = 'subject-header';
+                subjectHeader.textContent = subject;
+                
+                const removeBtn = document.createElement('button');
+                removeBtn.className = 'remove-col-btn';
+                removeBtn.innerHTML = '×';
+                removeBtn.onclick = function() { removeColumn(subject); };
+                
+                subjectHeader.appendChild(removeBtn);
+                headerRow.appendChild(subjectHeader);
+            });
+            
+            return headerRow;
+        }
+        
+        // ضبط حجم الخلية تلقائياً
+        function autoResize(textarea) {
+            textarea.style.height = 'auto';
+            textarea.style.height = textarea.scrollHeight + 'px';
+            textarea.style.width = 'auto';
+            textarea.style.width = textarea.scrollWidth + 'px';
+        }
+        
+        // إضافة أيام جديدة
+        function addDays(count) {
+            const tableBody = document.getElementById('studyPlan');
+            const currentDays = tableBody.querySelectorAll('tr').length;
+            
+            for (let i = 1; i <= count; i++) {
+                const newDay = currentDays + i;
+                const newRow = createDayRow(newDay);
+                tableBody.appendChild(newRow);
+            }
+            
+            saveData();
+        }
+        
+        // حذف آخر يوم
+        function removeLastDay() {
+            const tableBody = document.getElementById('studyPlan');
+            const rows = tableBody.querySelectorAll('tr');
+            
+            if (rows.length > 0) {
+                tableBody.removeChild(rows[rows.length - 1]);
+                saveData();
+            } else {
+                alert('لا توجد أيام متبقية للحذف!');
+            }
+        }
+        
+        // إظهار حوار إضافة عمود جديد
+        function showAddColumnDialog() {
+            document.getElementById('addColControls').style.display = 'flex';
+            document.getElementById('newSubjectName').focus();
+        }
+        
+        // إخفاء حوار إضافة عمود جديد
+        function hideAddColumnDialog() {
+            document.getElementById('addColControls').style.display = 'none';
+            document.getElementById('newSubjectName').value = '';
+        }
+        
+        // إضافة عمود جديد
+        function addNewColumn() {
+            const newSubject = document.getElementById('newSubjectName').value.trim();
+            
+            if (newSubject === '') {
+                alert('يرجى إدخال اسم المادة!');
+                return;
+            }
+            
+            if (subjects.includes(newSubject)) {
+                alert('هذه المادة موجودة بالفعل!');
+                return;
+            }
+            
+            // إضافة المادة الجديدة إلى المصفوفة
+            subjects.push(newSubject);
+            
+            // تحديث رأس الجدول
+            updateTableHeader();
+            
+            // إضافة العمود الجديد لكل يوم موجود
+            const tableBody = document.getElementById('studyPlan');
+            const rows = tableBody.querySelectorAll('tr');
+            
+            rows.forEach((row, index) => {
+                const day = index + 1;
+                const cell = document.createElement('td');
+                
+                const textarea = document.createElement('textarea');
+                textarea.className = 'editable-cell';
+                textarea.id = `day-${day}-${newSubject.replace(/\s+/g, '-')}`;
+                textarea.setAttribute('data-day', day);
+                textarea.setAttribute('data-subject', newSubject);
+                textarea.placeholder = newSubject;
+                
+                textarea.addEventListener('input', function() {
+                    autoResize(this);
+                });
+                
+                textarea.addEventListener('keydown', function(e) {
+                    if (e.key === 'Tab') {
+                        e.preventDefault();
+                    }
+                });
+                
+                cell.appendChild(textarea);
+                row.appendChild(cell);
+            });
+            
+            // إخفاء حوار الإضافة وإعادة تعيين الحقل
+            hideAddColumnDialog();
+            
+            // حفظ البيانات
+            saveData();
+        }
+        
+        // تحديث رأس الجدول
+        function updateTableHeader() {
+            const tableHeader = document.getElementById('tableHeader');
+            tableHeader.innerHTML = '';
+            tableHeader.appendChild(createTableHeader());
+        }
+        
+        // حذف عمود
+        function removeColumn(subject) {
+            if (!confirm(`هل أنت متأكد من حذف مادة ${subject}؟ سيتم حذف جميع البيانات الخاصة بهذه المادة.`)) {
+                return;
+            }
+            
+            // إزالة المادة من المصفوفة
+            subjects = subjects.filter(sub => sub !== subject);
+            
+            // تحديث رأس الجدول
+            updateTableHeader();
+            
+            // إزالة العمود من كل الصفوف
+            const tableBody = document.getElementById('studyPlan');
+            const rows = tableBody.querySelectorAll('tr');
+            
+            rows.forEach(row => {
+                const cells = row.querySelectorAll('td');
+                for (let i = 0; i < cells.length; i++) {
+                    const textarea = cells[i].querySelector('textarea');
+                    if (textarea && textarea.getAttribute('data-subject') === subject) {
+                        row.removeChild(cells[i]);
+                        break;
+                    }
+                }
+            });
+            
+            // حفظ البيانات
+            saveData();
+        }
+        
+        // دالة الحفظ
+        function saveData() {
+            const allData = {};
+            
+            document.querySelectorAll('.editable-cell').forEach(textarea => {
+                const day = textarea.getAttribute('data-day');
+                const subject = textarea.getAttribute('data-subject');
+                
+                if (!allData[day]) {
+                    allData[day] = {};
+                }
+                
+                allData[day][subject] = textarea.value;
+            });
+            
+            localStorage.setItem('studyPlanData', JSON.stringify(allData));
+            localStorage.setItem('totalDays', document.getElementById('studyPlan').querySelectorAll('tr').length);
+            localStorage.setItem('subjects', JSON.stringify(subjects));
+            
+            // إظهار تنبيه بصري مؤقت بدلاً من alert
+            showTempAlert('تم حفظ التغييرات بنجاح', 'success');
+        }
+        
+        // دالة مسح البيانات
+        function clearData() {
+            if (confirm('هل أنت متأكد من مسح جميع البيانات؟ سيتم حذف كل المواد والأيام.')) {
+                localStorage.removeItem('studyPlanData');
+                localStorage.removeItem('totalDays');
+                localStorage.removeItem('subjects');
+                subjects = [
+                    'عربي',
+                    'كيمياء',
+                    'فيزياء',
+                    'إنجليزي',
+                    'رياضيات بحتة',
+                    'رياضيات تطبيقية'
+                ];
+                initializeTable(25);
+                showTempAlert('تم مسح جميع البيانات', 'success');
+            }
+        }
+        
+        // طباعة الخطة كصورة
+        function printPlan() {
+            const table = document.querySelector('.study-plan');
+            
+            html2canvas(table, {
+                scale: 2,
+                logging: false,
+                useCORS: true,
+                allowTaint: true,
+                scrollX: 0,
+                scrollY: 0,
+                windowWidth: table.scrollWidth,
+                windowHeight: table.scrollHeight
+            }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = 'خطة-الدراسة.png';
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            });
+        }
+        
+        // استعادة البيانات المحفوظة
+        function loadData() {
+            const savedData = localStorage.getItem('studyPlanData');
+            const savedDays = localStorage.getItem('totalDays') || 25;
+            const savedSubjects = localStorage.getItem('subjects');
+            
+            if (savedSubjects) {
+                subjects = JSON.parse(savedSubjects);
+            }
+            
+            initializeTable(savedDays);
+            
+            if (savedData) {
+                const allData = JSON.parse(savedData);
+                
+                Object.keys(allData).forEach(day => {
+                    Object.keys(allData[day]).forEach(subject => {
+                        const textarea = document.getElementById(`day-${day}-${subject.replace(/\s+/g, '-')}`);
+                        if (textarea) {
+                            textarea.value = allData[day][subject];
+                            autoResize(textarea);
+                        }
+                    });
+                });
+            }
+        }
+        
+        // تهيئة الجدول
+        function initializeTable(daysCount) {
+            const tableBody = document.getElementById('studyPlan');
+            const tableHeader = document.getElementById('tableHeader');
+            
+            tableBody.innerHTML = '';
+            updateTableHeader();
+            
+            for (let day = 1; day <= daysCount; day++) {
+                const row = createDayRow(day);
+                tableBody.appendChild(row);
+            }
+        }
+        
+        // إظهار تنبيه مؤقت
+        function showTempAlert(message, type) {
+            const alertDiv = document.createElement('div');
+            alertDiv.textContent = message;
+            alertDiv.style.position = 'fixed';
+            alertDiv.style.bottom = '20px';
+            alertDiv.style.left = '50%';
+            alertDiv.style.transform = 'translateX(-50%)';
+            alertDiv.style.padding = '10px 20px';
+            alertDiv.style.borderRadius = '5px';
+            alertDiv.style.backgroundColor = type === 'success' ? '#2ecc71' : '#e74c3c';
+            alertDiv.style.color = 'white';
+            alertDiv.style.zIndex = '1000';
+            alertDiv.style.boxShadow = '0 2px 10px rgba(0,0,0,0.2)';
+            alertDiv.style.transition = 'all 0.3s';
+            
+            document.body.appendChild(alertDiv);
+            
+            setTimeout(() => {
+                alertDiv.style.opacity = '0';
+                setTimeout(() => {
+                    document.body.removeChild(alertDiv);
+                }, 300);
+            }, 3000);
+        }
+        
+        // تحميل البيانات عند فتح الصفحة
+        window.addEventListener('DOMContentLoaded', loadData);
+        
+        // ضبط أحجام الخلايا بعد التحميل
+        window.addEventListener('load', () => {
+            document.querySelectorAll('.editable-cell').forEach(textarea => {
+                autoResize(textarea);
+            });
+        });
+    </script>
+</body>
+</html>
